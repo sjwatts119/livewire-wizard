@@ -2,9 +2,9 @@
 
 namespace SamWatts\LivewireWizard;
 
+use SamWatts\LivewireWizard\Commands\LivewireWizardCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use SamWatts\LivewireWizard\Commands\LivewireWizardCommand;
 
 class LivewireWizardServiceProvider extends PackageServiceProvider
 {
