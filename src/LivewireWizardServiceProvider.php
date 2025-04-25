@@ -3,6 +3,7 @@
 namespace SamWatts\LivewireWizard;
 
 use SamWatts\LivewireWizard\Commands\LivewireWizardCommand;
+use SamWatts\LivewireWizard\Commands\MakeWizardCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -19,7 +20,6 @@ class LivewireWizardServiceProvider extends PackageServiceProvider
             ->name('livewire-wizard')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_livewire_wizard_table')
-            ->hasCommand(LivewireWizardCommand::class);
+            ->hasCommand(MakeWizardCommand::class);
     }
 }

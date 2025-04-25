@@ -1,0 +1,21 @@
+<?php
+
+namespace [namespace];
+
+use Illuminate\View\View;
+use SamWatts\LivewireWizard\Livewire\Wizard;
+
+class [class] extends Wizard
+{
+    public function steps(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public function render(): View
+    {
+        return view('[view]');
+    }
+}
