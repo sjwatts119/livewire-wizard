@@ -2,7 +2,6 @@
 
 namespace SamWatts\LivewireWizard;
 
-use SamWatts\LivewireWizard\Commands\LivewireWizardCommand;
 use SamWatts\LivewireWizard\Commands\MakeWizardCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
