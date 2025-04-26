@@ -7,8 +7,8 @@ use Exception;
 abstract class StepException extends Exception
 {
     public function __construct(
-        ?int $previousStep = null,
-        ?int $targetStep = null,
+        ?string $previousStep = null,
+        ?string $targetStep = null,
         ?string $message = null,
         int $code = 0,
         ?\Throwable $previous = null
@@ -17,5 +17,5 @@ abstract class StepException extends Exception
         parent::__construct($generatedMessage, $code, $previous);
     }
 
-    abstract protected function defaultMessage(int $previousStep, int $targetStep): string;
+    abstract protected function defaultMessage(string $previousStep, string $targetStep): string;
 }
