@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Session;
 use Livewire\Component;
-use SamWatts\LivewireWizard\Exceptions\Wizard\NoStepsDefinedException;
+use SamWatts\LivewireWizard\Exceptions\Wizard\StepDefinitionException;
 use SamWatts\LivewireWizard\Wizard\WizardStep;
 
 abstract class Wizard extends Component
@@ -14,33 +14,46 @@ abstract class Wizard extends Component
     #[Session, Locked]
     public string $step;
 
-    abstract public function steps(): array;
+    abstract public function wizardSteps(): array;
 
     /**
-     * @throws NoStepsDefinedException
+     * @throws StepDefinitionException
      */
-    private function stepsCollection(): Collection
+    public function validateSteps(Collection $steps): void
     {
-        $collection = collect($this->steps())
-            ->ensure(WizardStep::class)
-            ->mapWithKeys(fn (WizardStep $step) => [$step->getTitle() => $step]);
-
-        if ($collection->isEmpty()) {
-            throw new NoStepsDefinedException;
+        if ($steps->isEmpty()) {
+            throw new StepDefinitionException;
         }
 
-        return $collection;
+        if (($duplicates = $steps->duplicates(fn (WizardStep $step) => $step->getTitle()))->isNotEmpty()) {
+            throw new StepDefinitionException(
+                message: 'Duplicate step titles found: ' . $duplicates->implode(', ')
+            );
+        }
+    }
+
+    /**
+     * @throws StepDefinitionException
+     */
+    public function steps(): Collection
+    {
+        $steps = collect($this->wizardSteps())
+            ->ensure(WizardStep::class);
+
+        $this->validateSteps($steps);
+
+        return $steps->mapWithKeys(fn (WizardStep $step) => [$step->getTitle() => $step]);
     }
 
     /**
      * Get the current step title.
      * If no step is set, or the step is not found in the collection, set the step to the first step's title.
      *
-     * @throws NoStepsDefinedException
+     * @throws StepDefinitionException
      */
     private function getOrInitialiseCurrentStepTitle(): string
     {
-        return !$this->step || !$this->stepsCollection()->has($this->step)
+        return !$this->step || !$this->steps()->has($this->step)
             ? $this->step = $this->firstStep()->getTitle()
             : $this->step;
     }
@@ -48,37 +61,37 @@ abstract class Wizard extends Component
     /**
      * Get a step by its title. If the step is not found, return null.
      *
-     * @throws NoStepsDefinedException
+     * @throws StepDefinitionException
      */
     public function step(string $title): ?WizardStep
     {
-        return $this->stepsCollection()->get($title);
+        return $this->steps()->get($title);
     }
 
     /**
      * Get the first step.
      *
-     * @throws NoStepsDefinedException
+     * @throws StepDefinitionException
      */
     public function firstStep(): WizardStep
     {
-        return $this->stepsCollection()->first();
+        return $this->steps()->first();
     }
 
     /**
      * Get the last step.
      *
-     * @throws NoStepsDefinedException
+     * @throws StepDefinitionException
      */
     public function lastStep(): WizardStep
     {
-        return $this->stepsCollection()->last();
+        return $this->steps()->last();
     }
 
     /**
      * Get the current step. If there is no current step, return the first step.
      *
-     * @throws NoStepsDefinedException
+     * @throws StepDefinitionException
      */
     public function currentStep(): WizardStep
     {
@@ -88,22 +101,22 @@ abstract class Wizard extends Component
     /**
      * Get the next step. If there is no next step, return null.
      *
-     * @throws NoStepsDefinedException
+     * @throws StepDefinitionException
      */
     public function nextStep(): ?WizardStep
     {
-        return $this->stepsCollection()
+        return $this->steps()
             ->after(fn (WizardStep $step) => $step->getTitle() === $this->step, true);
     }
 
     /**
      * Get the previous step. If there is no previous step, return null.
      *
-     * @throws NoStepsDefinedException
+     * @throws StepDefinitionException
      */
     public function previousStep(): ?WizardStep
     {
-        return $this->stepsCollection()
+        return $this->steps()
             ->before(fn (WizardStep $step) => $step->getTitle() === $this->step, true);
     }
 }

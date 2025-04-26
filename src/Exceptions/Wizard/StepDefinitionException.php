@@ -2,7 +2,7 @@
 
 namespace SamWatts\LivewireWizard\Exceptions\Wizard;
 
-class NoStepsDefinedException extends StepException
+class StepDefinitionException extends StepException
 {
     protected function defaultMessage(string $previousStep, string $targetStep): string
     {

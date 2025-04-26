@@ -63,6 +63,11 @@ class WizardStep
         }
     }
 
+    public function is(WizardStep $step): bool
+    {
+        return $step->getTitle() === $this->getTitle();
+    }
+
     public function view(): View
     {
         return $this->view;
