@@ -3,6 +3,7 @@
 namespace SamWatts\LivewireWizard\Livewire;
 
 use Illuminate\Support\Collection;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Session;
 use Livewire\Component;
 use SamWatts\LivewireWizard\Exceptions\Wizard\NoStepsDefinedException;
@@ -10,7 +11,7 @@ use SamWatts\LivewireWizard\Wizard\WizardStep;
 
 abstract class Wizard extends Component
 {
-    #[Session]
+    #[Session, Locked]
     public string $step;
 
     abstract public function steps(): array;
@@ -22,7 +23,7 @@ abstract class Wizard extends Component
     {
         $collection = collect($this->steps())
             ->ensure(WizardStep::class)
-            ->mapWithKeys(fn (WizardStep $step) => [$step->title => $step]);
+            ->mapWithKeys(fn (WizardStep $step) => [$step->getTitle() => $step]);
 
         if ($collection->isEmpty()) {
             throw new NoStepsDefinedException;
@@ -40,8 +41,18 @@ abstract class Wizard extends Component
     private function getOrInitialiseCurrentStepTitle(): string
     {
         return !$this->step || !$this->stepsCollection()->has($this->step)
-            ? $this->step = $this->firstStep()->title
+            ? $this->step = $this->firstStep()->getTitle()
             : $this->step;
+    }
+
+    /**
+     * Get a step by its title. If the step is not found, return null.
+     *
+     * @throws NoStepsDefinedException
+     */
+    public function step(string $title): ?WizardStep
+    {
+        return $this->stepsCollection()->get($title);
     }
 
     /**
@@ -55,11 +66,11 @@ abstract class Wizard extends Component
     }
 
     /**
-     * Get the last step. If there is no last step, return null.
+     * Get the last step.
      *
      * @throws NoStepsDefinedException
      */
-    public function lastStep(): ?WizardStep
+    public function lastStep(): WizardStep
     {
         return $this->stepsCollection()->last();
     }
@@ -69,7 +80,7 @@ abstract class Wizard extends Component
      *
      * @throws NoStepsDefinedException
      */
-    public function currentStep(): ?WizardStep
+    public function currentStep(): WizardStep
     {
         return $this->step($this->getOrInitialiseCurrentStepTitle());
     }
@@ -94,15 +105,5 @@ abstract class Wizard extends Component
     {
         return $this->stepsCollection()
             ->before(fn (WizardStep $step) => $step->getTitle() === $this->step, true);
-    }
-
-    /**
-     * Get a step by its title. If the step is not found, return null.
-     *
-     * @throws NoStepsDefinedException
-     */
-    public function step(string $title): ?WizardStep
-    {
-        return $this->stepsCollection()->get($title);
     }
 }
