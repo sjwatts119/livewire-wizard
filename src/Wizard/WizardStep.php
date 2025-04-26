@@ -15,20 +15,29 @@ class WizardStep
         public Closure|Validator|null $rules = null,
     ) {}
 
+    /**
+     * Create a new step instance.
+     */
     public static function make(
         string $title,
         View $view,
-        Closure|Validator|null $rules = null,
+        ?Closure $rule = null,
     ): self {
-        return new self($title, $view, $rules);
+        return new self($title, $view, $rule);
     }
 
+    /**
+     * Get the title of the step.
+     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
     /**
+     * Run the authorisation rules for the step.
+     * Returns the step if the rules are met, otherwise throws an exception.
+     *
      * @throws StepNotAuthorisedException
      */
     public function authorise(): self
@@ -37,14 +46,6 @@ class WizardStep
             return self;
         }
 
-        //        if ($this->rules instanceof Validator) {
-        //            return $this->rules->passes()
-        //                ? $this
-        //                : throw new StepNotAuthorisedException(
-        //                    message: "Attempted to get view '{$this->view->getName()}', but required rules were not met for step with title '{$this->title}'",
-        //                );
-        //        }
-
         return ($this->rules)()
             ? $this
             : throw new StepNotAuthorisedException(
@@ -52,6 +53,10 @@ class WizardStep
             );
     }
 
+    /**
+     * Run the authorisation rules for the step.
+     * Returns true if no rules have been set or if the rules are met, otherwise false.
+     */
     public function canNavigate(): bool
     {
         try {
@@ -63,11 +68,17 @@ class WizardStep
         }
     }
 
+    /**
+     * Compare the step to another step.
+     */
     public function is(WizardStep $step): bool
     {
         return $step->getTitle() === $this->getTitle();
     }
 
+    /**
+     * Get the view for the step. This does not run the authorisation rules.
+     */
     public function view(): View
     {
         return $this->view;

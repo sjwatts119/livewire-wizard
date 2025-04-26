@@ -129,9 +129,7 @@ abstract class Wizard extends Component
      */
     public function navigateToNextStep(): void
     {
-        $nextStep = $this->nextStep();
-
-        if ($nextStep) {
+        if ($nextStep = $this->nextStep()) {
             $this->step = $nextStep->getTitle();
         }
     }
@@ -144,9 +142,7 @@ abstract class Wizard extends Component
      */
     public function navigateToPreviousStep(): void
     {
-        $previousStep = $this->previousStep();
-
-        if ($previousStep) {
+        if ($previousStep = $this->previousStep()) {
             $this->step = $previousStep->getTitle();
         }
     }
