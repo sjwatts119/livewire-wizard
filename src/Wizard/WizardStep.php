@@ -39,7 +39,7 @@ class WizardStep
      * Run the authorisation rules for the step.
      * Returns the step if the rules are met, otherwise aborts the request by default.
      *
-     * Optionally, you can pass a boolean to choose whether to abort the request or throw an exception.
+     * Optionally, you can pass a boolean to choose whether to abort the request or throw an exception on failure.
      *
      * @throws StepNotAuthorisedException
      */
