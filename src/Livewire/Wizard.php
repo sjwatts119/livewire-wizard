@@ -19,11 +19,13 @@ abstract class Wizard extends Component
     /**
      * @throws StepDefinitionException
      */
-    public function validateSteps(Collection $steps): void
+    private function validateSteps(Collection $steps): void
     {
         if ($steps->isEmpty()) {
-            throw new StepDefinitionException;
+            throw new StepDefinitionException('No steps have been defined.');
         }
+
+        $steps->ensure(WizardStep::class);
 
         if (($duplicates = $steps->duplicates(fn (WizardStep $step) => $step->getTitle()))->isNotEmpty()) {
             throw new StepDefinitionException(
@@ -37,8 +39,7 @@ abstract class Wizard extends Component
      */
     public function steps(): Collection
     {
-        $steps = collect($this->wizardSteps())
-            ->ensure(WizardStep::class);
+        $steps = collect($this->wizardSteps());
 
         $this->validateSteps($steps);
 
