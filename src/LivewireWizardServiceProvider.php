@@ -17,8 +17,6 @@ class LivewireWizardServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('livewire-wizard')
-            ->hasConfigFile()
-            ->hasViews()
             ->hasCommand(MakeWizardCommand::class);
     }
 }
