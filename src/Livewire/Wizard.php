@@ -120,4 +120,46 @@ abstract class Wizard extends Component
         return $this->steps()
             ->before(fn (WizardStep $step) => $step->getTitle() === $this->step, true);
     }
+
+    /**
+     * Navigate to the next step.
+     * If there is no next step, do nothing.
+     *
+     * @throws StepDefinitionException
+     */
+    public function navigateToNextStep(): void
+    {
+        $nextStep = $this->nextStep();
+
+        if ($nextStep) {
+            $this->step = $nextStep->getTitle();
+        }
+    }
+
+    /**
+     * Navigate to the previous step.
+     * If there is no previous step, do nothing.
+     *
+     * @throws StepDefinitionException
+     */
+    public function navigateToPreviousStep(): void
+    {
+        $previousStep = $this->previousStep();
+
+        if ($previousStep) {
+            $this->step = $previousStep->getTitle();
+        }
+    }
+
+    /**
+     * Navigate to a specific step by its title.
+     *
+     * @throws StepDefinitionException
+     */
+    public function navigateToStep(string $step): void
+    {
+        if ($this->step($step)) {
+            $this->step = $step;
+        }
+    }
 }
