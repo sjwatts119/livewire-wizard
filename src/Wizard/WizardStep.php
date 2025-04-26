@@ -3,7 +3,6 @@
 namespace SamWatts\LivewireWizard\Wizard;
 
 use Closure;
-use Illuminate\Validation\Validator;
 use Illuminate\View\View;
 use SamWatts\LivewireWizard\Exceptions\Wizard\StepNotAuthorisedException;
 
@@ -12,18 +11,20 @@ class WizardStep
     public function __construct(
         public string $title,
         public View $view,
-        public Closure|Validator|null $rules = null,
+        public ?Closure $canNavigate = null,
     ) {}
 
     /**
      * Create a new step instance.
+     *
+     * Optionally, you can pass a boolean closure which is evaluated when authorising the step.
      */
     public static function make(
         string $title,
         View $view,
-        ?Closure $rule = null,
+        ?Closure $canNavigate = null,
     ): self {
-        return new self($title, $view, $rule);
+        return new self($title, $view, $canNavigate);
     }
 
     /**
@@ -36,21 +37,33 @@ class WizardStep
 
     /**
      * Run the authorisation rules for the step.
-     * Returns the step if the rules are met, otherwise throws an exception.
+     * Returns the step if the rules are met, otherwise aborts the request by default.
+     *
+     * Optionally, you can pass a boolean to choose whether to abort the request or throw an exception.
      *
      * @throws StepNotAuthorisedException
      */
-    public function authorise(): self
+    public function authorise(bool $aborts = true): self
     {
-        if (is_null($this->rules)) {
+        if (is_null($this->canNavigate)) {
             return self;
         }
 
-        return ($this->rules)()
-            ? $this
-            : throw new StepNotAuthorisedException(
-                message: "Attempted to get view '{$this->view->getName()}', but required rules were not met for step with title '{$this->title}'",
+        if (($this->canNavigate)()) {
+            return $this;
+        }
+
+        if ($aborts) {
+            abort(
+                code: 403,
+                message: 'You are not authorised to view this step.',
             );
+        }
+
+        throw new StepNotAuthorisedException(
+            previousStep: $this->getTitle(),
+            targetStep: $this->getTitle(),
+        );
     }
 
     /**
@@ -60,7 +73,7 @@ class WizardStep
     public function canNavigate(): bool
     {
         try {
-            $this->authorise();
+            $this->authorise(aborts: false);
 
             return true;
         } catch (StepNotAuthorisedException) {
