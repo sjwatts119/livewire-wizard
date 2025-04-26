@@ -35,6 +35,8 @@ abstract class Wizard extends Component
     }
 
     /**
+     * Get a collection of steps defined in the wizard keyed by their titles.
+     *
      * @throws StepDefinitionException
      */
     public function steps(): Collection

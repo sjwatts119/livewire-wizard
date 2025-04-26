@@ -4,18 +4,25 @@ namespace [namespace];
 
 use Illuminate\View\View;
 use SamWatts\LivewireWizard\Livewire\Wizard;
+use SamWatts\LivewireWizard\Wizard\WizardStep;
 
 class [class] extends Wizard
 {
-    public function steps(): array
+    public function wizardSteps(): array
     {
         return [
-            //
+            WizardStep::make(
+                title: 'Step 1',
+                view: view('[view]'),
+            ),
         ];
     }
 
     public function render(): View
     {
-        return view('[view]');
+        return $this
+            ->currentStep()
+            ->authorise()
+            ->view();
     }
 }
