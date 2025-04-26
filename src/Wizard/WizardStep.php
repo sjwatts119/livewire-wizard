@@ -37,13 +37,13 @@ class WizardStep
             return self;
         }
 
-//        if ($this->rules instanceof Validator) {
-//            return $this->rules->passes()
-//                ? $this
-//                : throw new StepNotAuthorisedException(
-//                    message: "Attempted to get view '{$this->view->getName()}', but required rules were not met for step with title '{$this->title}'",
-//                );
-//        }
+        //        if ($this->rules instanceof Validator) {
+        //            return $this->rules->passes()
+        //                ? $this
+        //                : throw new StepNotAuthorisedException(
+        //                    message: "Attempted to get view '{$this->view->getName()}', but required rules were not met for step with title '{$this->title}'",
+        //                );
+        //        }
 
         return ($this->rules)()
             ? $this
@@ -56,6 +56,7 @@ class WizardStep
     {
         try {
             $this->authorise();
+
             return true;
         } catch (StepNotAuthorisedException) {
             return false;
