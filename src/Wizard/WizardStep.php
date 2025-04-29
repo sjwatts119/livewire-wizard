@@ -46,7 +46,7 @@ class WizardStep
     public function authorise(bool $aborts = true): self
     {
         if (is_null($this->canNavigate)) {
-            return self;
+            return $this;
         }
 
         if (($this->canNavigate)()) {

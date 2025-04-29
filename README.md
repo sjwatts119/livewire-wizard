@@ -1,78 +1,135 @@
-# This is my package livewire-wizard
+# Livewire Wizard
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/sjwatts119/livewire-wizard.svg?style=flat-square)](https://packagist.org/packages/sjwatts119/livewire-wizard)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/sjwatts119/livewire-wizard/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sjwatts119/livewire-wizard/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/sjwatts119/livewire-wizard/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/sjwatts119/livewire-wizard/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/sjwatts119/livewire-wizard.svg?style=flat-square)](https://packagist.org/packages/sjwatts119/livewire-wizard)
+[//]: # ([![Latest Version on Packagist]&#40;https://img.shields.io/packagist/v/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+[//]: # ([![GitHub Tests Action Status]&#40;https://img.shields.io/github/actions/workflow/status/sjwatts119/livewire-wizard/run-tests.yml?branch=main&label=tests&style=flat-square&#41;]&#40;https://github.com/sjwatts119/livewire-wizard/actions?query=workflow%3Arun-tests+branch%3Amain&#41;)
 
-## Support us
+[//]: # ([![GitHub Code Style Action Status]&#40;https://img.shields.io/github/actions/workflow/status/sjwatts119/livewire-wizard/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square&#41;]&#40;https://github.com/sjwatts119/livewire-wizard/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain&#41;)
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/livewire-wizard.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/livewire-wizard)
+[//]: # ([![Total Downloads]&#40;https://img.shields.io/packagist/dt/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+A simple wizard component for Laravel Livewire. Supports an unlimited number of steps with optional custom rules for each.
 
 ## Installation
 
-You can install the package via composer:
+Install the package via composer:
 
 ```bash
 composer require sjwatts119/livewire-wizard
 ```
 
-You can publish and run the migrations with:
+## Creating A Wizard
+To make your first wizard component, run the following command:
 
 ```bash
-php artisan vendor:publish --tag="livewire-wizard-migrations"
-php artisan migrate
+php artisan make:wizard
 ```
 
-You can publish the config file with:
+This command supports any arguments used in the [Livewire Make Command](https://livewire.laravel.com/docs/quickstart#create-a-livewire-component).
 
-```bash
-php artisan vendor:publish --tag="livewire-wizard-config"
-```
-
-This is the contents of the published config file:
+A new wizard class and a corresponding step view will have been created. The class will look like this:
 
 ```php
-return [
-];
+<?php
+
+namespace App\Livewire;
+
+use Illuminate\View\View;
+use SamWatts\LivewireWizard\Livewire\Wizard;
+use SamWatts\LivewireWizard\Wizard\WizardStep;
+
+class YourWizard extends Wizard
+{
+    public function wizardSteps(): array
+    {
+        return [
+            WizardStep::make(
+                title: 'Step 1',
+                view: view('step-1'),
+            ),
+        ];
+    }
+
+    public function render(): View
+    {
+        return $this
+            ->currentStep()
+            ->authorise()
+            ->view();
+    }
+}
 ```
 
-Optionally, you can publish the views using
+## Creating Steps
+To create a new Wizard Step, you can add a new `WizardStep` instance in the `wizardSteps()` array.
 
-```bash
-php artisan vendor:publish --tag="livewire-wizard-views"
-```
+A `WizardStep` accepts:
+- `title`: The name of the step. This must be unique from your other steps.
+- `view`: The view to be rendered when the step is active.
+- `canNavigate` *(Optional)*: A boolean closure, prevents access to a step unless the closure evaluates to `true`.
 
-## Usage
-
+Here is an example of a contact form wizard with two steps:
 ```php
-$livewireWizard = new SamWatts\LivewireWizard();
-echo $livewireWizard->echoPhrase('Hello, SamWatts!');
+<?php
+
+namespace App\Livewire;
+
+use Illuminate\View\View;
+use SamWatts\LivewireWizard\Livewire\Wizard;
+use SamWatts\LivewireWizard\Wizard\WizardStep;
+
+class YourWizard extends Wizard
+{
+    public ?string $message = null;
+
+    public function wizardSteps(): array
+    {
+        return [
+            WizardStep::make(
+                title: 'Your Message',
+                view: view('livewire.wizard.message'),
+            ),
+            WizardStep::make(
+                title: 'Your Details',
+                view: view('livewire.wizard.details'),
+                canNavigate: fn () => $this->message !== null,
+            ),
+        ];
+    }
+
+    // ...
+}
 ```
 
-## Testing
-
-```bash
-composer test
+## Rendering The Current Step
+Internally, the wizard always keeps track of the current step. To retrieve an instance of the current step, you can call:
+```php
+$this->currentStep();
 ```
 
-## Changelog
+If you'd like to retrieve the relevant view for the current step, you can call:
+```php
+$this->currentStep()->view();
+```
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+## Authorising The Current Step
+If any of your steps have `canNavigate` closures, you can run these before rendering the view:
+```php
+$this->currentStep()
+    ->authorise()
+    ->view();
+```
 
-## Contributing
+The `authorise()` method will abort with a 403 response if the closure returns false. 
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Optionally, you can pass a false boolean value to the `aborts` parameter of `authorise()`. 
+```php
+$this->currentStep()
+    ->authorise(aborts: false)
+    ->view();
+```
+This will cause a `StepNotAuthorisedException` to be thrown when the rules return false instead of aborting the request.
 
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
 
 ## Credits
 
