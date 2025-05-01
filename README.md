@@ -130,6 +130,8 @@ $this->currentStep()
 ```
 This will cause a `StepNotAuthorisedException` to be thrown when the rules return false instead of aborting the request.
 
+## Displaying The Wizard Navigation
+
 
 ## Credits
 

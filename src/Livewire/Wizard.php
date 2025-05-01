@@ -56,7 +56,7 @@ abstract class Wizard extends Component
      */
     private function getOrInitialiseCurrentStepTitle(): string
     {
-        return !$this->step || !$this->steps()->has($this->step)
+        return !isset($this->step) || !$this->steps()->has($this->step)
             ? $this->step = $this->firstStep()->getTitle()
             : $this->step;
     }
