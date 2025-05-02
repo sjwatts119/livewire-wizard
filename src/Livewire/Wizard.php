@@ -36,7 +36,7 @@ abstract class Wizard extends Component
     }
 
     /**
-     * Run validation on the provided properties. Can be used within the `canNavigate` closure.
+     * Run the validation rules for provided properties. Can be used within the `canNavigate` closure.
      *
      * @see \Livewire\Component::validateOnly()
      *
