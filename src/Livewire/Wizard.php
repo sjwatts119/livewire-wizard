@@ -39,8 +39,6 @@ abstract class Wizard extends Component
      * Run the validation rules for provided properties. Can be used within the `canNavigate` closure.
      *
      * @see \Livewire\Component::validateOnly()
-     *
-     * @throws StepDefinitionException
      */
     public function validatePropertiesForStep(string|array|Collection $properties): bool
     {
