@@ -3,15 +3,16 @@
 namespace SamWatts\LivewireWizard\Livewire;
 
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\Session;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use SamWatts\LivewireWizard\Exceptions\Wizard\StepDefinitionException;
 use SamWatts\LivewireWizard\Wizard\WizardStep;
 
 abstract class Wizard extends Component
 {
-    #[Session, Locked]
+    #[Url, Locked]
     public string $step;
 
     abstract public function wizardSteps(): array;
@@ -31,6 +32,29 @@ abstract class Wizard extends Component
             throw new StepDefinitionException(
                 message: 'Duplicate step titles found: ' . $duplicates->implode(', ')
             );
+        }
+    }
+
+    /**
+     * Run validation on the provided properties. Can be used within the `canNavigate` closure.
+     *
+     * @see \Livewire\Component::validateOnly()
+     *
+     * @throws StepDefinitionException
+     */
+    public function validatePropertiesForStep(string|array|Collection $properties): bool
+    {
+        try {
+            if (is_string($properties)) {
+                $this->validateOnly($properties);
+            }
+
+            collect($properties)
+                ->each(fn ($property) => $this->validateOnly($property));
+
+            return true;
+        } catch (ValidationException $e) {
+            return false;
         }
     }
 

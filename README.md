@@ -92,7 +92,7 @@ class YourWizard extends Wizard
             WizardStep::make(
                 title: 'Your Details',
                 view: view('livewire.wizard.details'),
-                canNavigate: fn () => $this->message !== null,
+                canNavigate: fn () => $this->validatePropertiesForStep('message'),
             ),
         ];
     }
