@@ -22,7 +22,6 @@ class [class] extends Wizard
     {
         return $this
             ->currentStep()
-            ->authorise()
             ->view();
     }
 }
