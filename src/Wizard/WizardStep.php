@@ -19,11 +19,7 @@ class WizardStep
      *
      * Optionally, you can pass a boolean closure which is evaluated when authorising the step.
      *
-     * @param string $title
-     * @param View $view
      * @param Closure<bool>|null $canNavigate
-     *
-     * @return WizardStep
      */
     public static function make(
         string $title,
