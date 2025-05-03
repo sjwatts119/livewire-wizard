@@ -166,7 +166,7 @@ $this->currentStep()
     ->view();
 ```
 
-This will cause a `StepNotAuthorisedException` to be thrown when the `canNavigate` closure returns false instead of aborting the request. You could then handle this exception using [Livewire's Exception Lifecycle Hook](https://livewire.laravel.com/docs/lifecycle-hooks#exception). For example:
+This will cause a `StepNotAuthorisedException` to be thrown when the `canNavigate` closure returns false instead of aborting the request. You could then gracefully handle this exception using [Livewire's Exception Lifecycle Hook](https://livewire.laravel.com/docs/lifecycle-hooks#exception). For example:
 ```php
 namespace App\Livewire;
 
@@ -259,7 +259,7 @@ $this->lastStep(); // Returns the last WizardStep instance.
 $this->step('step-title'); // Returns the WizardStep instance with the given title, or null if it does not exist.
 ```
 
-## Navigation Methods
+## Wizard Navigation Methods
 You can use the following methods to navigate between steps in the wizard:
 
 ```php
@@ -289,6 +289,19 @@ $step->authorise(); // Executes the canNavigate closure and returns the step ins
 ```
 ```php
 $step->canNavigate(); // Executes the canNavigate closure and returns a boolean value.
+```
+
+## Running Tests
+To run the tests, install dependencies:
+
+```bash
+composer install
+```
+
+Then, you can run the tests using the following command:
+
+```bash
+composer test
 ```
 
 ## Credits

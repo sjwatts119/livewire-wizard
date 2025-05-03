@@ -61,6 +61,25 @@ it('can make a step with canNavigate closure', function () {
         ->toBe($closure);
 });
 
+it('compares step instances with is()', function () {
+    $step1 = WizardStep::make(
+        title: 'Step 1',
+        view: view('test::step-1'),
+    );
+
+    $step2 = $step1;
+
+    $step3 = WizardStep::make(
+        title: 'Step 2',
+        view: view('test::step-2'),
+    );
+
+    expect($step2->is($step1))->toBeTrue()
+        ->and($step1->is($step2))->toBeTrue()
+        ->and($step1->is($step3))->toBeFalse()
+        ->and($step3->is($step1))->toBeFalse();
+});
+
 /*
  * Step auth when canNavigate is null
  */
@@ -126,22 +145,3 @@ it('throws a StepNotAuthorisedException when running authorise() and canNavigate
 
     $step->authorise(aborts: false);
 })->throws(StepNotAuthorisedException::class, 'Attempted to access step Step 1, but required rules were not met.');
-
-it('compares step instances with is()', function () {
-    $step1 = WizardStep::make(
-        title: 'Step 1',
-        view: view('test::step-1'),
-    );
-
-    $step2 = $step1;
-
-    $step3 = WizardStep::make(
-        title: 'Step 2',
-        view: view('test::step-2'),
-    );
-
-    expect($step2->is($step1))->toBeTrue()
-        ->and($step1->is($step2))->toBeTrue()
-        ->and($step1->is($step3))->toBeFalse()
-        ->and($step3->is($step1))->toBeFalse();
-});

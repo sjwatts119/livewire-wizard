@@ -31,8 +31,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SamWatts\\LivewireWizard\\": "src/",
-            "SamWatts\\LivewireWizard\\Database\\Factories\\": "database/factories/"
+            "SamWatts\\LivewireWizard\\": "src/"
         }
     },
     "autoload-dev": {
