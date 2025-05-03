@@ -2,9 +2,11 @@
 
 namespace SamWatts\LivewireWizard\Exceptions\Wizard;
 
-class StepDefinitionException extends StepException
+use Exception;
+
+class StepDefinitionException extends Exception
 {
-    protected function defaultMessage(string $previousStep, string $targetStep): string
+    protected function message(): string
     {
         return 'No steps have been defined.';
     }

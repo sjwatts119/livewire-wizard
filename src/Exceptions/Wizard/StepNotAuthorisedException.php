@@ -2,10 +2,27 @@
 
 namespace SamWatts\LivewireWizard\Exceptions\Wizard;
 
-class StepNotAuthorisedException extends StepException
+use Exception;
+use SamWatts\LivewireWizard\Wizard\WizardStep;
+use Throwable;
+
+class StepNotAuthorisedException extends Exception
 {
-    protected function defaultMessage(string $previousStep, string $targetStep): string
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, ?WizardStep $step = null)
     {
-        return "Attempted to access step {$targetStep} from step {$previousStep}, but required rules were not met.";
+        if ($step) {
+            $message = $this->message($step);
+        }
+
+        if (empty($message)) {
+            $message = 'You are not authorised to view this step.';
+        }
+
+        parent::__construct($message, $code, $previous);
+    }
+
+    protected function message(WizardStep $step): string
+    {
+        return "Attempted to access step {$step->title()}, but required rules were not met.";
     }
 }

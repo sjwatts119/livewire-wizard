@@ -60,10 +60,7 @@ class WizardStep
             );
         }
 
-        throw new StepNotAuthorisedException(
-            previousStep: $this->title(),
-            targetStep: $this->title(),
-        );
+        throw new StepNotAuthorisedException(step: $this);
     }
 
     /**
