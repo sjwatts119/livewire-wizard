@@ -18,6 +18,8 @@ abstract class Wizard extends Component
     abstract public function wizardSteps(): array;
 
     /**
+     * @param Collection<WizardStep> $steps
+     *
      * @throws StepDefinitionException
      */
     private function validateSteps(Collection $steps): void
@@ -38,6 +40,8 @@ abstract class Wizard extends Component
     /**
      * Run the validation rules for provided properties. Can be used within the `canNavigate` closure.
      *
+     * @param string|array<string>|Collection<string> $properties
+     *
      * @see \Livewire\Component::validateOnly()
      */
     public function validatePropertiesForStep(string|array|Collection $properties): bool
@@ -48,7 +52,8 @@ abstract class Wizard extends Component
             }
 
             collect($properties)
-                ->each(fn ($property) => $this->validateOnly($property));
+                ->ensure('string')
+                ->each(fn (string $property) => $this->validateOnly($property));
 
             return true;
         } catch (ValidationException $e) {

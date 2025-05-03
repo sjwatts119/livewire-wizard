@@ -298,7 +298,7 @@ To run the tests, install dependencies:
 composer install
 ```
 
-Then, you can run the tests using the following command:
+Then, you can run the tests:
 
 ```bash
 composer test
