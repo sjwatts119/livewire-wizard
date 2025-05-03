@@ -1,8 +1,9 @@
 # A Simple Headless Livewire Wizard Component.
 
-[//]: # ([![Latest Version on Packagist]&#40;https://img.shields.io/packagist/v/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
-
-[//]: # ([![Total Downloads]&#40;https://img.shields.io/packagist/dt/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/sjwatts119/livewire-wizard.svg?style=flat-square)](https://packagist.org/packages/sjwatts119/livewire-wizard)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/sjwatts119/livewire-wizard/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sjwatts119/livewire-wizard/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/sjwatts119/livewire-wizard/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/sjwatts119/livewire-wizard/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/sjwatts119/livewire-wizard.svg?style=flat-square)](https://packagist.org/packages/sjwatts119/livewire-wizard)
 
 ## Installation
 
@@ -173,6 +174,7 @@ namespace App\Livewire;
 use Illuminate\View\View;
 use SamWatts\LivewireWizard\Livewire\Wizard;
 use SamWatts\LivewireWizard\Wizard\WizardStep;
+use SamWatts\LivewireWizard\Exceptions\StepNotAuthorisedException;
 
 class YourWizard extends Wizard
 {
@@ -298,7 +300,7 @@ To run the tests, install dependencies:
 composer install
 ```
 
-Then, you can run the tests:
+Then run the tests using:
 
 ```bash
 composer test
