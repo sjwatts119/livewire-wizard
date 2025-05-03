@@ -2,10 +2,6 @@
 
 [//]: # ([![Latest Version on Packagist]&#40;https://img.shields.io/packagist/v/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
 
-[//]: # ([![GitHub Tests Action Status]&#40;https://img.shields.io/github/actions/workflow/status/sjwatts119/livewire-wizard/run-tests.yml?branch=main&label=tests&style=flat-square&#41;]&#40;https://github.com/sjwatts119/livewire-wizard/actions?query=workflow%3Arun-tests+branch%3Amain&#41;)
-
-[//]: # ([![GitHub Code Style Action Status]&#40;https://img.shields.io/github/actions/workflow/status/sjwatts119/livewire-wizard/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square&#41;]&#40;https://github.com/sjwatts119/livewire-wizard/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain&#41;)
-
 [//]: # ([![Total Downloads]&#40;https://img.shields.io/packagist/dt/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
 
 ## Installation
