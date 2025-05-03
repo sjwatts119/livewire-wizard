@@ -8,7 +8,9 @@
 
 [//]: # ([![Total Downloads]&#40;https://img.shields.io/packagist/dt/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
 
-A simple wizard component for Laravel Livewire. Supports an unlimited number of steps with optional custom rules for each.
+A simple headless wizard component for Laravel Livewire. 
+
+Supports an unlimited number of steps with optional custom rules for each with support for Livewire property validation.
 
 ## Installation
 
@@ -66,7 +68,7 @@ To create a new Wizard Step, you can add a new `WizardStep` instance in the `wiz
 A `WizardStep` accepts:
 - `title`: The name of the step. This must be unique from your other steps.
 - `view`: The view to be rendered when the step is active.
-- `canNavigate` *(Optional)*: A boolean closure, prevents access to a step unless the closure evaluates to `true`.
+- `canNavigate` *(Optional)*: A boolean closure, prevents access to a step unless the closure evaluates to `true`. For more information, see [Defining Step Rules](#defining-step-rules).
 
 Here is an example of a contact form wizard with two steps:
 ```php
@@ -80,8 +82,6 @@ use SamWatts\LivewireWizard\Wizard\WizardStep;
 
 class YourWizard extends Wizard
 {
-    public ?string $message = null;
-
     public function wizardSteps(): array
     {
         return [
@@ -92,27 +92,73 @@ class YourWizard extends Wizard
             WizardStep::make(
                 title: 'Your Details',
                 view: view('livewire.wizard.details'),
-                canNavigate: fn () => $this->validatePropertiesForStep('message'),
             ),
         ];
     }
 
-    // ...
+    public function render(): View
+    {
+        return $this
+            ->currentStep()
+            ->view();
+    }
 }
 ```
 
-## Rendering The Current Step
-Internally, the wizard always keeps track of the current step. To retrieve an instance of the current step, you can call:
+## Defining Step Rules
+As mentioned previously, a WizardStep can accept a `canNavigate` closure. This closure will be called when the step is rendered, and should return a boolean value.
+
+The wizard class exposes a helpful method `validatePropertiesForStep()` which can be used to validate any number of class properties. Internally, this uses [Livewire's Validation](https://livewire.laravel.com/docs/validation) to validate the properties, and returns a boolean value indicating whether the validation passed for all provided properties.
+
+This validation also works with [Livewire Form Object](https://livewire.laravel.com/docs/forms#extracting-a-form-object) Properties. These should be referenced using dot notation, e.g. `form.name`.
+
+For example, the following step will only be accessible if the validation rules defined on the name and message properties pass:
 ```php
-$this->currentStep();
+<?php
+
+namespace App\Livewire;
+
+use Illuminate\View\View;
+use SamWatts\LivewireWizard\Livewire\Wizard;
+use SamWatts\LivewireWizard\Wizard\WizardStep;
+
+class YourWizard extends Wizard
+{
+    #[Validate('required')]
+    public string $name = '';
+    
+    #[Validate('required')]
+    public string $message = '';
+
+    public function wizardSteps(): array
+    {
+        return [
+            // Previous steps...
+
+            WizardStep::make(
+                title: 'Step 3',
+                view: view('livewire.example-wizard.step-3'),
+                canNavigate: fn () => $this->validatePropertiesForStep(['name', 'message']),
+            ),
+        ];
+    }
+
+    public function render(): View
+    {
+        return $this
+            ->currentStep()
+            ->authorise() // Validate the 'name' and 'message' properties if we are on step 3.
+            ->view();
+    }
+}
 ```
 
+## Rendering The Wizard
 If you'd like to retrieve the relevant view for the current step, you can call:
 ```php
 $this->currentStep()->view();
 ```
 
-## Authorising The Current Step
 If any of your steps have `canNavigate` closures, you can run these before rendering the view:
 ```php
 $this->currentStep()
@@ -128,7 +174,43 @@ $this->currentStep()
     ->authorise(aborts: false)
     ->view();
 ```
-This will cause a `StepNotAuthorisedException` to be thrown when the rules return false instead of aborting the request.
+
+This will cause a `StepNotAuthorisedException` to be thrown when the rules return false instead of aborting the request. You could then handle this exception using [Livewire's Exception Lifecycle Hook](https://livewire.laravel.com/docs/lifecycle-hooks#exception). For example:
+```php
+namespace App\Livewire;
+
+use Illuminate\View\View;
+use SamWatts\LivewireWizard\Livewire\Wizard;
+use SamWatts\LivewireWizard\Wizard\WizardStep;
+
+class YourWizard extends Wizard
+{
+    /*
+     * Gracefully handle the exception.
+     */
+    public function exception($e, $stopPropagation) {
+        if ($e instanceof StepNotAuthorisedException) {
+            $this->notify('Post is not found');
+            $stopPropagation();
+        }
+    }
+
+    public function wizardSteps(): array
+    {
+        return [
+            // Steps with canNavigate closures...
+        ]
+    }
+
+    public function render(): View
+    {
+        return $this
+            ->currentStep()
+            ->authorise(aborts: false) // Throws StepNotAuthorisedException if rules fail...
+            ->view();
+    }
+}
+```
 
 ## Displaying The Wizard Navigation
 
