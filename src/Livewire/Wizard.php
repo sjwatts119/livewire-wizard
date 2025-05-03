@@ -28,7 +28,7 @@ abstract class Wizard extends Component
 
         $steps->ensure(WizardStep::class);
 
-        if (($duplicates = $steps->duplicates(fn (WizardStep $step) => $step->getTitle()))->isNotEmpty()) {
+        if (($duplicates = $steps->duplicates(fn (WizardStep $step) => $step->title()))->isNotEmpty()) {
             throw new StepDefinitionException(
                 message: 'Duplicate step titles found: ' . $duplicates->implode(', ')
             );
@@ -67,7 +67,7 @@ abstract class Wizard extends Component
 
         $this->validateSteps($steps);
 
-        return $steps->mapWithKeys(fn (WizardStep $step) => [$step->getTitle() => $step]);
+        return $steps->mapWithKeys(fn (WizardStep $step) => [$step->title() => $step]);
     }
 
     /**
@@ -79,7 +79,7 @@ abstract class Wizard extends Component
     private function getOrInitialiseCurrentStepTitle(): string
     {
         return !isset($this->step) || !$this->steps()->has($this->step)
-            ? $this->step = $this->firstStep()->getTitle()
+            ? $this->step = $this->firstStep()->title()
             : $this->step;
     }
 
@@ -131,7 +131,7 @@ abstract class Wizard extends Component
     public function nextStep(): ?WizardStep
     {
         return $this->steps()
-            ->after(fn (WizardStep $step) => $step->getTitle() === $this->step, true);
+            ->after(fn (WizardStep $step) => $step->title() === $this->step, true);
     }
 
     /**
@@ -142,7 +142,7 @@ abstract class Wizard extends Component
     public function previousStep(): ?WizardStep
     {
         return $this->steps()
-            ->before(fn (WizardStep $step) => $step->getTitle() === $this->step, true);
+            ->before(fn (WizardStep $step) => $step->title() === $this->step, true);
     }
 
     /**
@@ -154,7 +154,7 @@ abstract class Wizard extends Component
     public function navigateToNextStep(): void
     {
         if ($nextStep = $this->nextStep()) {
-            $this->step = $nextStep->getTitle();
+            $this->step = $nextStep->title();
         }
     }
 
@@ -167,7 +167,7 @@ abstract class Wizard extends Component
     public function navigateToPreviousStep(): void
     {
         if ($previousStep = $this->previousStep()) {
-            $this->step = $previousStep->getTitle();
+            $this->step = $previousStep->title();
         }
     }
 

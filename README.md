@@ -1,4 +1,4 @@
-# Livewire Wizard
+# A Simple Headless Livewire Wizard Component.
 
 [//]: # ([![Latest Version on Packagist]&#40;https://img.shields.io/packagist/v/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
 
@@ -8,10 +8,6 @@
 
 [//]: # ([![Total Downloads]&#40;https://img.shields.io/packagist/dt/sjwatts119/livewire-wizard.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/sjwatts119/livewire-wizard&#41;)
 
-A simple headless wizard component for Laravel Livewire. 
-
-Supports an unlimited number of steps with optional custom rules for each with support for Livewire property validation.
-
 ## Installation
 
 Install the package via composer:
@@ -20,7 +16,7 @@ Install the package via composer:
 composer require sjwatts119/livewire-wizard
 ```
 
-## Creating A Wizard
+## Creating Your First Wizard
 To make your first wizard component, run the following command:
 
 ```bash
@@ -62,7 +58,7 @@ class YourWizard extends Wizard
 }
 ```
 
-## Creating Steps
+## Creating Wizard Steps
 To create a new Wizard Step, you can add a new `WizardStep` instance in the `wizardSteps()` array.
 
 A `WizardStep` accepts:
@@ -136,8 +132,8 @@ class YourWizard extends Wizard
             // Previous steps...
 
             WizardStep::make(
-                title: 'Step 3',
-                view: view('livewire.example-wizard.step-3'),
+                title: 'Confirm',
+                view: view('livewire.wizard.confirm'),
                 canNavigate: fn () => $this->validatePropertiesForStep(['name', 'message']),
             ),
         ];
@@ -147,14 +143,14 @@ class YourWizard extends Wizard
     {
         return $this
             ->currentStep()
-            ->authorise() // Validate the 'name' and 'message' properties if we are on step 3.
+            ->authorise() // Validate the 'name' and 'message' properties if we are on step 'Confirm'.
             ->view();
     }
 }
 ```
 
 ## Rendering The Wizard
-If you'd like to retrieve the relevant view for the current step, you can call:
+If you'd like to retrieve the view for the current step, you can call:
 ```php
 $this->currentStep()->view();
 ```
@@ -175,7 +171,7 @@ $this->currentStep()
     ->view();
 ```
 
-This will cause a `StepNotAuthorisedException` to be thrown when the rules return false instead of aborting the request. You could then handle this exception using [Livewire's Exception Lifecycle Hook](https://livewire.laravel.com/docs/lifecycle-hooks#exception). For example:
+This will cause a `StepNotAuthorisedException` to be thrown when the `canNavigate` closure returns false instead of aborting the request. You could then handle this exception using [Livewire's Exception Lifecycle Hook](https://livewire.laravel.com/docs/lifecycle-hooks#exception). For example:
 ```php
 namespace App\Livewire;
 
@@ -199,7 +195,7 @@ class YourWizard extends Wizard
     {
         return [
             // Steps with canNavigate closures...
-        ]
+        ];
     }
 
     public function render(): View
@@ -212,8 +208,93 @@ class YourWizard extends Wizard
 }
 ```
 
-## Displaying The Wizard Navigation
+## Navigation
+In your step views, you likely want to add some navigation buttons to allow the user to move between steps.
 
+You could use the [wire:click](https://livewire.laravel.com/docs/wire-click) directive to call any of the navigation methods on the wizard class. For example:
+```html
+<!-- Navigating to a specific step -->
+<x-wizard.nav.item
+    :current="$currentStep->is($step)"
+    :disabled="!$step->canNavigate()"
+    wire:click="navigateToStep('{{ $step->title() }}')"
+>
+    {{ $step->title() }}
+</x-wizard.nav.item>
+
+<!-- Navigating to the next step -->
+<x-wizard.nav.item
+    :disabled="!$nextStep->canNavigate()"
+    wire:click="navigateToNextStep()"
+>
+    Next
+</x-wizard.nav.item>
+
+<!-- Navigating to the previous step -->
+<x-wizard.nav.item
+    :disabled="!$previousStep->canNavigate()"
+    wire:click="navigateToPreviousStep()"
+>
+    Back
+</x-wizard.nav.item>
+```
+
+## Wizard Methods
+The wizard component has a number of public methods which can be used to get information about the current state of the wizard. These methods are:
+
+```php
+$this->steps(); // Returns a Collection of all WizardStep instances, keyed by their titles.
+```
+```php
+$this->currentStep(); // Returns the current WizardStep instance.
+```
+```php
+$this->nextStep(); // Returns the next WizardStep instance, or null if one does not exist.
+```
+```php
+$this->previousStep(); // Returns the previous WizardStep instance, or null if one does not exist.
+```
+```php
+$this->firstStep(); // Returns the first WizardStep instance.
+```
+```php
+$this->lastStep(); // Returns the last WizardStep instance.
+```
+```php
+$this->step('step-title'); // Returns the WizardStep instance with the given title, or null if it does not exist.
+```
+
+## Navigation Methods
+You can use the following methods to navigate between steps in the wizard:
+
+```php
+$this->navigateToPreviousStep(); // Sets the current step to the previous step, or does nothing if one does not exist.
+```
+```php
+$this->navigateToNextStep(); // Sets the current step to the next step, or does nothing if one does not exist.
+```
+```php
+$this->navigateToStep('step-title'); // Sets the current step to the WizardStep instance with the given title, or does nothing if it does not exist.
+```
+
+## WizardStep Methods
+The `WizardStep` class has a number of methods which can be used to render the step in your view. These methods are:
+
+```php
+$step->title(); // Returns the title of the step.
+```
+```php
+$step->view(); // Returns the view of the step.
+```
+```php
+$step->is($otherStep); // Returns a boolean value indicating whether the provided WizardStep has the same title as this step.
+```
+```php
+$step->authorise(); // Executes the canNavigate closure and returns the step instance.
+```
+```php
+$step->canNavigate(); // Executes the canNavigate closure and returns a boolean value.
+```
 
 ## Credits
 

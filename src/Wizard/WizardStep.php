@@ -30,7 +30,7 @@ class WizardStep
     /**
      * Get the title of the step.
      */
-    public function getTitle(): string
+    public function title(): string
     {
         return $this->title;
     }
@@ -61,8 +61,8 @@ class WizardStep
         }
 
         throw new StepNotAuthorisedException(
-            previousStep: $this->getTitle(),
-            targetStep: $this->getTitle(),
+            previousStep: $this->title(),
+            targetStep: $this->title(),
         );
     }
 
@@ -86,7 +86,7 @@ class WizardStep
      */
     public function is(WizardStep $step): bool
     {
-        return $step->getTitle() === $this->getTitle();
+        return $step->title() === $this->title();
     }
 
     /**
